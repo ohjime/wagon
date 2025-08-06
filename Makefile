@@ -14,20 +14,17 @@ docs-build:
 central-run-dev:
 	@echo "Starting Central Server...\n"
 	@echo "Installing dependencies...\n"
-	@cd src/backend/central \
-		&& uv sync \
-		&& uv run lib/manage.py makemigrations \
-		&& uv run lib/manage.py migrate
+	@cd software/backend/central \
+		&& uv sync
 	@echo "\nMaking Migrations...\n"
-	@cd src/backend/central \
-		&& uv sync \
+	@cd software/backend/central \
 		&& uv run lib/manage.py makemigrations \
 		&& uv run lib/manage.py migrate
 	@echo "\nRunning tests...\n"
 	@echo "All tests passed!\n"
 	@echo "Central Development Server is ready to run 🏃!\n"
 	@echo "Starting Central Server...\n"
-	@cd src/backend/central \
+	@cd software/backend/central \
 		&& uv run lib/manage.py runserver
 
 central-add-app:
@@ -38,18 +35,18 @@ ifndef app-name
 else
 	@echo "Adding new app '$(app-name)' to Central Backend...\n"
 	@echo "Installing dependencies...\n"
-	@cd src/backend/central \
+	@cd software/backend/central \
 		&& uv sync
 	@echo "\nAdding App...\n"
-	@cd src/backend/central/lib \
+	@cd software/backend/central/lib \
 		&& uv run django-admin startapp $(app-name) 
-	@echo "\nApp '$(app-name)' added successfully to src/backend/central/lib!\n"
+	@echo "\nApp '$(app-name)' added successfully to software/backend/central/lib!\n"
 endif
 
 superuser:
 	@echo "Creating superuser for Central Backend...\n"
 	@echo "Installing dependencies...\n"
-	@cd src/backend/central \
+	@cd software/backend/central \
 		&& uv sync
-	@cd src/backend/central \
+	@cd software/backend/central \
 		&& uv run lib/manage.py createsuperuser
