@@ -83,6 +83,12 @@ const config = {
           },
           {
             type: 'doc',
+            docId: 'analysis/index',
+            position: 'right',
+            label: 'Analysis',
+          },
+          {
+            type: 'doc',
             docId: 'design/index',
             position: 'right',
             label: 'Design',
@@ -94,7 +100,7 @@ const config = {
             label: 'Development',
           },
           {
-            label: 'Backlog',
+            label: 'Sprints',
             href: 'https://tree.taiga.io/project/ohjime-wagon/backlog',
             position: 'right',
           },
