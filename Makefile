@@ -16,6 +16,9 @@ central-run-dev:
 	@echo "Installing dependencies...\n"
 	@cd software/backend/central \
 		&& uv sync
+	@echo "\nCollecting Static Files...\n"
+	@cd software/backend/central \
+		&& uv run lib/manage.py collectstatic
 	@echo "\nMaking Migrations...\n"
 	@cd software/backend/central \
 		&& uv run lib/manage.py makemigrations \
@@ -50,3 +53,12 @@ superuser:
 		&& uv sync
 	@cd software/backend/central \
 		&& uv run lib/manage.py createsuperuser
+
+central-clean:
+	@echo "Cleaning up __pycache__, db.sqlite3, and migration files ..."
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@find . -type f -name "db.sqlite3" -delete
+	@find . -type d -name "migrations" | while read dir; do \
+		find "$$dir" -type f ! -name "__init__.py" -delete; \
+	done
+	@echo "Cleanup complete."

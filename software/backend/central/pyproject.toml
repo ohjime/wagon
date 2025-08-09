@@ -9,4 +9,7 @@ requires-python = ">=3.13"
 dependencies = [
     "django>=5.2.4",
     "django-unfold>=0.63.0",
+    "django-map-widgets>=0.4.2",
+    "psycopg[binary]>=3.2",
+    "django-environ>=0.11.2",
 ]
