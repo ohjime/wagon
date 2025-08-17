@@ -1,9 +1,12 @@
+RED="'\033[0;31m'"
+NC="'\033[0m'"
+
 docs-start:
 	@echo "Starting Documentation Server...\n"
 	@cd docs \
 		&& npm start
 
-docs:
+docs-build:
 	@echo "Building Documentation Server...\n"
 	@cd docs \
 		&& npm install @docusaurus/eslint-plugin@latest --save-dev \
@@ -11,58 +14,49 @@ docs:
 		&& npm dedupe \
 		&& npm run build
 
-central-start:
-	@echo "Starting Central Server...\n"
-	@echo "Installing dependencies...\n"
-	@cd software/backend/central \
+server:
+ifdef run
+	@echo "Running command in Server Environment..."
+	@cd src/server \
+		&& $(run)
+else
+	@reset
+	@echo "${RED}Killing any Orphan${NC} Processes..."
+	@./bin/kill_honcho.sh
+	@echo "\nInstalling dependencies...\n"
+	@cd src/server \
 		&& uv sync
+	@echo "\nBuild Static Files...\n"
+	@cd src/server/vite \
+		&& npm run build
 	@echo "\nMaking Migrations...\n"
-	@cd software/backend/central \
-		&& uv run lib/manage.py makemigrations \
-		&& uv run lib/manage.py migrate
+	@cd src/server \
+		&& uv run lib/main.py makemigrations \
+		&& uv run lib/main.py migrate
 	@echo "\nRunning tests...\n"
 	@echo "All tests passed!\n"
 	@echo "Central Development Server is ready to run 🏃!\n"
-	@echo "Starting Central Server...\n"
-	@cd software/backend/central \
-		&& uv run lib/manage.py runserver
-
-central-app:
-	@echo "Adding new app '$(app-name)' to Central Backend...\n"
-ifndef app-name
-	@echo "app-name is not set. Please set it before running this command.\n"
-	@echo "Usage: make central-app app-name=your_app_name"
-else
-	@echo "Adding new app '$(app-name)' to Central Backend...\n"
-	@echo "Installing dependencies...\n"
-	@cd software/backend/central \
-		&& uv sync
-	@echo "\nAdding App...\n"
-	@cd software/backend/central/lib \
-		&& uv run django-admin startapp $(app-name) 
-	@echo "\nApp '$(app-name)' added successfully to software/backend/central/lib!\n"
+	@echo "Starting Server...\n"
+	@cd src/server \
+		&& uv run lib/main.py vite runserver
 endif
 
-central-install:
-	@echo "Installing '$(app-name)' to Central Python Environment...\n"
-ifndef app-name
-	@echo "app-name is not set. Please set it before running this command.\n"
-	@echo "Usage: make central-app app-name=your_app_name"
-else
-	@echo "Adding new app '$(app-name)' to Central Backend...\n"
-	@echo "Installing dependencies...\n"
-	@cd software/backend/central \
-		&& uv sync
-	@echo "\nAdding App...\n"
-	@cd software/backend/central/lib \
-		&& uv run django-admin startapp $(app-name) 
-	@echo "\nApp '$(app-name)' added successfully to software/backend/central/lib!\n"
-endif
+server-clean:
+	@echo "${RED}Cleaning Server${NC}..."
+	@echo "Deleting __pycache__ directories"
+	@cd src/server/lib \
+		&& find . -type d -name "__pycache__" -exec rm -rf {} +
+	@echo "Deleting old migration files"
+	@cd src/server/lib \
+		&& find . -type f -path "*/migrations/*.py" ! -name "__init__.py" -exec rm -f {} +
+	@echo "Deleting default SQLite databases"
+	@cd src/server \
+		&& find . -type f -name "db.sqlite3" -exec rm -f {} +
 
 superuser:
 	@echo "Creating superuser for Central Backend...\n"
 	@echo "Installing dependencies...\n"
-	@cd software/backend/central \
+	@cd src/server \
 		&& uv sync
-	@cd software/backend/central \
-		&& uv run lib/manage.py createsuperuser
+	@cd src/server \
+		&& uv run lib/main.py createsuperuser
