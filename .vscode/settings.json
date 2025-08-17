@@ -1,0 +1,52 @@
+{
+    "python.defaultInterpreterPath": "src/server/.venv/bin/python3",
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "[json]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[jsonc]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[django-html]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "monosans.djlint"
+    },
+    "auto-close-tag.activationOnLanguage": [
+        "markdown",
+        "django-html"
+    ],
+    "auto-rename-tag.activationOnLanguage": [
+        "markdown",
+        "django-html",
+    ],
+    "emmet.includeLanguages": {
+        "django-html": "html",
+    },
+    "tailwind-fold.supportedLanguages": [
+        "html",
+        "django-html"
+    ],
+    "tailwind-fold.unfoldedTextOpacity": 1,
+    "tailwind-fold.foldedText": " class = ...",
+    "tailwind-fold.foldedTextColor": "#6699cc",
+    "tailwind-fold.unfoldIfLineSelected": true,
+    "tailwind-fold.showTailwindImage": true,
+    "djlint.maxAttributeLength": 10,
+    "djlint.maxLineLength": 20,
+    "editor.suggest.showWords": false,
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/uv.lock": true,
+        "**/package-lock.json": true,
+        "**/.dart_tool": true,
+        "**/db.sqlite3": true,
+        "**/__pycache__": true,
+        "**/__init__.py": true,
+    }
+}

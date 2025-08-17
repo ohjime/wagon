@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@source "../../../lib";
+@source "..";
+
+@plugin "daisyui" {
+    themes: pastel --default, sunset --prefersdark;
+}

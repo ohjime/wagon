@@ -1,0 +1,21 @@
+{
+  "name": "vite",
+  "version": "1.0.0",
+  "main": "vite.config.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --emptyOutDir"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.12",
+    "alpinejs": "^3.14.9",
+    "daisyui": "^5.0.50",
+    "tailwindcss": "^4.1.12",
+    "vite": "^6.3.5"
+  }
+}

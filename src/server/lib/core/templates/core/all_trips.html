@@ -1,0 +1,5 @@
+{% extends "dashboard/base.html" %}
+{% load render_table from django_tables2 %}
+{% block section %}
+      {% render_table table %}
+{% endblock section %}
