@@ -4,5 +4,9 @@
 @source "..";
 
 @plugin "daisyui" {
-    themes: pastel --default, sunset --prefersdark;
+    themes: winter --default, dracula --prefersdark;
+}
+
+@utility no-scrollbar {
+    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
 }

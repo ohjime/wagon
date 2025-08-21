@@ -1,5 +1,8 @@
-{% extends "dashboard/base.html" %}
 {% load render_table from django_tables2 %}
-{% block content %}
-      {% render_table table %}
-{% endblock content %}
+<div class="relative flex flex-col h-full">
+      <div class="overflow-x-auto flex flex-1 object-contain outline-2 outline-base-300 rounded-xl">
+            {% block content %}
+                  {% render_table table %}
+            {% endblock content %}
+      </div>
+</div>

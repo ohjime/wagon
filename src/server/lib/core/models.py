@@ -17,7 +17,7 @@ class Account(models.Model):
     avatar = models.URLField(max_length=255, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.email
 
 
 class Driver(models.Model):

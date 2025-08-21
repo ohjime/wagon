@@ -6,11 +6,13 @@ from django.views.generic.detail import DetailView
 
 
 def trips_index(request):
+    table = TripTable(Trip.objects.all())
+    RequestConfig(request, paginate={"per_page": 80}).configure(table)  # type: ignore
     if request.htmx:
-        template_name = "core/trips/partials/test.html"
+        template_name = "core/trips/partials/list.html"
     else:
         template_name = "core/trips/trips.html"
-    return render(request, template_name)
+    return render(request, template_name, {"table": table})
 
 
 def riders_index(request):

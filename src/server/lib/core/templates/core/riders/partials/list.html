@@ -2,35 +2,34 @@
     <table class="table table-pin-rows table-pin-cols">
         <thead>
             <tr>
+                <td></td>
                 <td>
                     <input type="checkbox"
                            class="checkbox" />
                 </td>
+                <th>Rider</th>
+                <td>
+                    Reservation Number
+                </td>
                 <td>Time</td>
                 <td>
-                    Res. Number
+                    Pick-up Location
                 </td>
-                <td>Rider</td>
-                <td>From</td>
-                <td>To</td>
+                <td>
+                    Drop-off Location
+                </td>
                 <td>Driver</td>
                 <td>Status</td>
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr class="hover:bg-base-200">
                 <td>
                     <input type="checkbox"
                            class="checkbox" />
                 </td>
-                <td>6:30 PM</td>
-                <td>
-                    <button class="btn btn-xs">
-                        RES-DQE9YS4
-                    </button>
-                </td>
-                <td>
-                    <div class="flex items-center gap-3">
+                <th>
+                    <div class="w-40 flex items-center gap-3">
                         <div class="avatar">
                             <div class="mask mask-squircle h-12 w-12">
                                 <img src="https://img.daisyui.com/images/profile/demo/2@94.webp"
@@ -48,15 +47,32 @@
                             </div>
                         </div>
                     </div>
+                </th>
+                <td>
+                    <button class="btn">
+                        RES-DQE9YS4
+                    </button>
                 </td>
                 <td>
-                    8715 104 Street Northwest, Edmonton, AB, Canada
+                    <div class="flex flex-col w-30 ">
+                        <div>6:30 PM</div>
+                        <div>
+                            June 20th, 2025
+                        </div>
+                    </div>
                 </td>
                 <td>
-                    7027 173 AVE NW, Edmonton, AB, Canada
+                    <div class="w-60 overflow-hidden truncate text-ellipsis">
+                        8715 104 Street Northwest, Edmonton, AB, Canada
+                    </div>
                 </td>
                 <td>
-                    <div class="flex items-center gap-3">
+                    <div class="w-60 overflow-hidden truncate text-ellipsis">
+                        8715 104 Street Northwest, Edmonton, AB, Canada
+                    </div>
+                </td>
+                <td>
+                    <div class="w-40 flex items-center gap-3">
                         <div class="avatar">
                             <div class="mask mask-squircle h-12 w-12">
                                 <img src="https://img.daisyui.com/images/profile/demo/2@94.webp"

@@ -39,20 +39,33 @@ class RiderFactory(factory.django.DjangoModelFactory):
     account = SubFactory(AccountFactory)  # type: ignore[misc]
 
 
-ORIGINS = [
-    "Central Station",
-    "Airport Terminal",
-    "Harbor Dock",
-    "University Campus",
-    "Tech Park",
-]
-DESTINATIONS = [
-    "City Mall",
-    "Hotel Plaza",
-    "Convention Center",
-    "Museum District",
-    "Old Town",
-]
+# ---------------------------------------------------------------------------
+# Address generation
+# ---------------------------------------------------------------------------
+# We want realistic-looking (but fake) Canadian / Edmonton style addresses of
+# the form: 8934 179A AVE NW Edmonton AB
+# Pattern pieces:
+#   <civic_number> <street_number>[<optional_letter>] <street_type> <direction> Edmonton AB
+# Example output: 523 82 AVE NE Edmonton AB
+#                 10432 179A ST NW Edmonton AB
+
+STREET_TYPES = ["AVE", "ST", "RD", "DR", "CT", "PL", "BLVD", "WAY", "TRAIL"]
+CARDINALS = ["NW", "NE", "SW", "SE"]
+LETTER_SUFFIXES = ["", "A", "B", "C"]  # appended to street number occasionally
+
+
+def generate_address() -> str:
+    civic_number = random.randint(1, 99999)  # Edmonton civic numbers can be large
+    street_number = random.randint(1, 300)
+    letter = random.choice(LETTER_SUFFIXES)
+    # Lower probability for a letter suffix; keep only ~20% of the time
+    if letter and random.random() > 0.2:
+        letter = ""
+    street_type = random.choice(STREET_TYPES)
+    direction = random.choice(CARDINALS)
+    return (
+        f"{civic_number} {street_number}{letter} {street_type} {direction} Edmonton AB"
+    )
 
 
 def _random_time_window():
@@ -70,16 +83,17 @@ class TripFactory(factory.django.DjangoModelFactory):
     driver = SubFactory(DriverFactory)  # type: ignore[misc]
     rider = SubFactory(RiderFactory)  # type: ignore[misc]
     datetime = LazyFunction(_random_time_window)
-    origin = LazyFunction(lambda: random.choice(ORIGINS))
+    origin = LazyFunction(generate_address)
     status = models.TripStatus.scheduled
 
     @factory.lazy_attribute  # type: ignore
     def destination(self):  # type: ignore
-        # Ensure origin != destination sometimes
-        dest_choices = [d for d in DESTINATIONS if d != self.origin]
-        return (
-            random.choice(dest_choices) if dest_choices else random.choice(DESTINATIONS)
-        )
+        # Ensure destination differs from origin; regenerate until different (cap tries)
+        for _ in range(5):
+            addr = generate_address()
+            if addr != self.origin:
+                return addr
+        return generate_address()
 
     @post_generation  # type: ignore
     def ensure_distinct_accounts(self, create, extracted, **kwargs):  # type: ignore
@@ -110,8 +124,8 @@ class TripFactory(factory.django.DjangoModelFactory):
                     driver=driver,
                     rider=rider,
                     datetime=_random_time_window(),
-                    origin=random.choice(ORIGINS),
-                    destination=random.choice(DESTINATIONS),
+                    origin=generate_address(),
+                    destination=generate_address(),
                     status=models.TripStatus.scheduled,
                 )
             )
