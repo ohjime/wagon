@@ -1,61 +1,8 @@
 {% load django_vite %}
+{% load django_htmx %}
 <!DOCTYPE html>
 <html lang="en">
       <head>
-            <style>
-                  /* Loader base layout */
-                  #page-loader {
-                        position: fixed;
-                        inset: 0;
-                        z-index: 9999;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        transition: opacity 0.4s, background-color 0.3s, color 0.3s;
-                        /* Fallback (will be immediately overridden by media queries in supporting browsers) */
-                        background: #2a303c;
-                        color: #d1d5db;
-                  }
-                  /* Spinner element inside loader (rotating color variant) */
-                  /* HTML: <div class="loader"></div> */
-                  .loader {
-                  --c:no-repeat linear-gradient(orange 0 0);
-                  background: 
-                  var(--c),var(--c),var(--c),
-                  var(--c),var(--c),var(--c),
-                  var(--c),var(--c),var(--c);
-                  background-size: 16px 16px;
-                  animation: 
-                  l32-1 1s infinite,
-                  l32-2 1s infinite;
-                  }
-                  @keyframes l32-1 {
-                  0%,100% {width:45px;height: 45px}
-                  35%,65% {width:65px;height: 65px}
-                  }
-                  @keyframes l32-2 {
-                  0%,40%  {background-position: 0 0,0 50%, 0 100%,50% 100%,100% 100%,100% 50%,100% 0,50% 0,  50% 50% }
-                  60%,100%{background-position: 0 50%, 0 100%,50% 100%,100% 100%,100% 50%,100% 0,50% 0,0 0,  50% 50% }
-                  }
-                  /* Light mode (system preference) */
-                  @media (prefers-color-scheme: light) {
-                        #page-loader {
-                              background: #f3f4f6; /* light gray */
-                              color: #374151;      /* slate-700 */
-                        }
-                  }
-                  /* Dark mode (system preference) */
-                  @media (prefers-color-scheme: dark) {
-                        #page-loader {
-                              background: #1f2733; /* deep slate */
-                              color: #d1d5db;      /* light gray */
-                        }
-                  }
-                  /* High contrast / forced colors (optional accessibility tweak) */
-                  @media (forced-colors: active) {
-                        #page-loader { background: Canvas; color: CanvasText; }
-                  }
-            </style>
             <title>Dispatcher | Royal Wagon</title>
             <meta charset="UTF-8">
             <meta name="viewport"
@@ -66,10 +13,129 @@
                   content="A Django project using Tailwind CSS.">
             <meta name="keywords"
                   content="Django, Tailwind, CSS, Python, Web Development">
+            <style>
+                /* Loader base layout */
+                #page-loader {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: opacity 0.4s, background-color 0.3s, color 0.3s;
+                    /* Fallback (will be immediately overridden by media queries in supporting browsers) */
+                    background: #2a303c;
+                    color: #d1d5db;
+                }
+
+                /* Spinner element inside loader (rotating color variant) */
+                .loader {
+                    --c: no-repeat linear-gradient(orange 0 0);
+                    background: var(--c), var(--c), var(--c), var(--c), var(--c), var(--c),
+                        var(--c), var(--c), var(--c);
+                    background-size: 16px 16px;
+                    animation: l32-1 1s infinite, l32-2 1s infinite;
+                }
+
+                @keyframes l32-1 {
+
+                    0%,
+                    100% {
+                        width: 45px;
+                        height: 45px;
+                    }
+
+                    35%,
+                    65% {
+                        width: 65px;
+                        height: 65px;
+                    }
+                }
+
+                @keyframes l32-2 {
+
+                    0%,
+                    40% {
+                        background-position: 0 0, 0 50%, 0 100%, 50% 100%, 100% 100%, 100% 50%,
+                            100% 0, 50% 0, 50% 50%;
+                    }
+
+                    60%,
+                    100% {
+                        background-position: 0 50%, 0 100%, 50% 100%, 100% 100%, 100% 50%,
+                            100% 0, 50% 0, 0 0, 50% 50%;
+                    }
+                }
+
+                /* Light mode (system preference) */
+                @media (prefers-color-scheme: light) {
+                    #page-loader {
+                        background: #f3f4f6;
+                        /* light gray */
+                        color: #374151;
+                        /* slate-700 */
+                    }
+                }
+
+                /* Dark mode (system preference) */
+                @media (prefers-color-scheme: dark) {
+                    #page-loader {
+                        background: #1f2733;
+                        /* deep slate */
+                        color: #d1d5db;
+                        /* light gray */
+                    }
+                }
+
+                /* High contrast / forced colors (optional accessibility tweak) */
+                @media (forced-colors: active) {
+                    #page-loader {
+                        background: Canvas;
+                        color: CanvasText;
+                    }
+                }
+            </style>
+            <script>
+                window.addEventListener("DOMContentLoaded", function() {
+                    var loader = document.getElementById("page-loader");
+                    if (loader) {
+                        setTimeout(function() {
+                            loader.style.opacity = "0";
+                            setTimeout(function() {
+                                loader.style.display = "none";
+                            }, 300);
+                        }, 600); // Show loader for at least 1 second
+                    }
+                });
+            </script>
+            <style>
+                .fade-out {
+                    opacity: 0;
+                    transition: opacity 0.5s ease;
+                }
+            </style>
+            <script>
+                document.querySelectorAll(".delayed-link").forEach((link) => {
+                    link.addEventListener("click", function(e) {
+                        e.preventDefault(); // stop the browser's immediate navigation
+                        const url = this.href;
+
+                        // Run your transition or animation
+                        document.body.classList.add("fade-out");
+
+                        // After animation ends, continue navigation
+                        setTimeout(() => {
+                            window.location.href = url;
+                        }, 500); // match your animation duration
+                    });
+                });
+            </script>
             {% vite_hmr_client %}
             {% vite_asset 'assets/js/main.js' %}
+            {% htmx_script %}
       </head>
-      <body class="flex h-screen w-screen flex-col overscroll-y-none"
+      <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+            class="flex h-screen w-screen flex-col overscroll-y-none"
             x-data="{ toggleDrawer: false, hoverDrawer: false }">
             <div id="page-loader">
                   <div class="loader"
@@ -77,19 +143,6 @@
                        aria-label="Loading">
                   </div>
             </div>
-            <script>
-                  window.addEventListener('DOMContentLoaded', function() {
-                        var loader = document.getElementById('page-loader');
-                        if (loader) {
-                              setTimeout(function() {
-                                    loader.style.opacity = '0';
-                                    setTimeout(function() {
-                                          loader.style.display = 'none';
-                                    }, 300);
-                              }, 600); // Show loader for at least 1 second
-                        }
-                  });
-            </script>
             <header class="flex h-20 w-full flex-row items-center">
                   <div class="flex h-20 items-center justify-between px-2 transition-all duration-300"
                        :class="hoverDrawer || toggleDrawer ? 'w-80 min-w-80 bg-base-300' : 'w-20 min-w-20 bg-base-300'"
@@ -199,8 +252,10 @@
                         <ul class="flex w-full flex-auto flex-col gap-3"
                             :class="hoverDrawer || toggleDrawer ? 'text-base-content/70' : 'text-base-content/30'">
                               <li>
-                                    <a href="{% url 'all_trips' %}"
-                                       class="flex h-full items-center gap-2 rounded-lg px-2 py-1.5 transition-color duration-200 hover:bg-base-200 hover:text-base-content mx-1">
+                                    <a hx-get="{% url 'trips_index' %}"
+                                       hx-target="#content"
+                                       hx-swap="innerHTML"
+                                       class="cursor-pointer flex h-full items-center gap-2 rounded-lg px-2 py-1.5 transition-color duration-200 hover:bg-base-200 hover:text-base-content mx-1">
                                           <svg class="rounded-lg flex h-full flex-shrink-0 items-center justify-center"
                                                xmlns="http://www.w3.org/2000/svg"
                                                height="36px"
@@ -211,13 +266,15 @@
                                           </svg>
                                           <span class="flex-shrink-0 transition-opacity delay-75 duration-200 truncate"
                                                 :class="hoverDrawer || toggleDrawer ? 'opacity-100 w-full' : 'opacity-0 w-0'">
-                                                Trip Manager
+                                                Trips
                                           </span>
                                     </a>
                               </li>
                               <li>
-                                    <a href="{% url 'all_riders' %}"
-                                       class="flex h-full items-center gap-2 rounded-lg px-2 py-1.5 transition-color duration-200 hover:bg-base-200 hover:text-base-content mx-1">
+                                    <a hx-get="{% url 'riders_index' %}"
+                                       hx-target="#content"
+                                       hx-swap="innerHTML"
+                                       class="cursor-pointer flex h-full items-center gap-2 rounded-lg px-2 py-1.5 transition-color duration-200 hover:bg-base-200 hover:text-base-content mx-1">
                                           <svg class="rounded-lg flex h-full flex-shrink-0 items-center justify-center"
                                                xmlns="http://www.w3.org/2000/svg"
                                                height="36px"
@@ -228,13 +285,15 @@
                                           </svg>
                                           <span class="flex-shrink-0 transition-opacity delay-75 duration-200 truncate"
                                                 :class="hoverDrawer || toggleDrawer ? 'opacity-100 w-full' : 'opacity-0 w-0'">
-                                                Customer Manager
+                                                Riders
                                           </span>
                                     </a>
                               </li>
                               <li>
-                                    <a href="{% url 'all_drivers' %}"
-                                       class="flex h-full items-center gap-2 rounded-lg px-2 py-1.5 transition-color duration-200 hover:bg-base-200 hover:text-base-content mx-1">
+                                    <a hx-get="{% url 'drivers_index' %}"
+                                       hx-target="#content"
+                                       hx-swap="innerHTML"
+                                       class="cursor-pointer flex h-full items-center gap-2 rounded-lg px-2 py-1.5 transition-color duration-200 hover:bg-base-200 hover:text-base-content mx-1">
                                           <svg class="rounded-lg flex h-full flex-shrink-0 items-center justify-center"
                                                xmlns="http://www.w3.org/2000/svg"
                                                height="36px"
@@ -245,7 +304,7 @@
                                           </svg>
                                           <span class="flex-shrink-0 transition-opacity delay-75 duration-200 truncate"
                                                 :class="hoverDrawer || toggleDrawer ? 'opacity-100 w-full' : 'opacity-0 w-0'">
-                                                Driver Manager
+                                                Drivers
                                           </span>
                                     </a>
                               </li>
@@ -256,7 +315,7 @@
                             :class="hoverDrawer || toggleDrawer ? 'bg-neutral-300/80' : 'bg-neutral-300/60'">
                         <div class="h-fit mb-4"
                              :class="hoverDrawer || toggleDrawer ? 'text-base-content/70' : 'text-base-content/30'">
-                              <a href="{% url 'settings' %}"
+                              <a href="{% url 'admin:index' %}"
                                  class="flex h-full items-center gap-2 rounded-lg px-2 py-1.5 transition-color duration-200 hover:bg-base-200 hover:text-base-content mx-1">
                                     <svg class="rounded-lg flex h-full flex-shrink-0 items-center justify-center"
                                          xmlns="http://www.w3.org/2000/svg"
@@ -268,15 +327,16 @@
                                     </svg>
                                     <span class="flex-shrink-0 transition-opacity delay-75 duration-200 truncate"
                                           :class="hoverDrawer || toggleDrawer ? 'opacity-100 w-full' : 'opacity-0 w-0'">
-                                          Trip Manager
+                                          Admin Settings
                                     </span>
                               </a>
                         </div>
                   </nav>
-                  <section class="ml-20 bg-base h-full flex-1 overflow-auto px-12 py-4 transition-all duration-300"
+                  <section id="content"
+                           class="ml-20 bg-base h-full flex-1 overflow-auto px-12 py-4 transition-all duration-300"
                            :class="toggleDrawer ? 'ml-80' : 'ml-20'">
-                        {% block section %}
-                        {% endblock section %}
+                        {% block content %}
+                        {% endblock content %}
                   </section>
             </div>
       </body>

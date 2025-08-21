@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "django.contrib.staticfiles",
     "django_vite",
+    "django_htmx",
     "django_tables2",
     "core",
     "dashboard",
@@ -34,6 +35,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 # if DEBUG:
 #     MIDDLEWARE += [
