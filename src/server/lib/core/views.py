@@ -5,11 +5,33 @@ from django.shortcuts import render
 from django.views.generic.detail import DetailView
 
 
-def all_trips(request):
-    template_name = "core/all_trips.html"
-    table = TripTable(Trip.objects.all())
-    RequestConfig(request, paginate={"per_page": 5}).configure(table)  # type: ignore
-    return render(request, template_name, {"table": table})
+def trips_index(request):
+    if request.htmx:
+        template_name = "core/trips/partials/test.html"
+    else:
+        template_name = "core/trips/trips.html"
+    return render(request, template_name)
+
+
+def riders_index(request):
+    if request.htmx:
+        template_name = "core/riders/partials/list.html"
+    else:
+        template_name = "core/riders/riders.html"
+    return render(request, template_name)
+
+
+def drivers_index(request):
+    if request.htmx:
+        template_name = "core/drivers/partials/list.html"
+    else:
+        template_name = "core/drivers/drivers.html"
+    return render(request, template_name)
+
+
+def index(request):
+    template_name = "core/index.html"
+    return render(request, template_name)
 
 
 class TripDetailView(DetailView):

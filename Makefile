@@ -28,6 +28,7 @@ else
 		&& uv sync
 	@echo "\nBuild Static Files...\n"
 	@cd src/server/vite \
+		&& npm install \
 		&& npm run build
 	@echo "\nMaking Migrations...\n"
 	@cd src/server \

@@ -1,5 +1,6 @@
 {
     "python.defaultInterpreterPath": "src/server/.venv/bin/python3",
+    "python.terminal.activateEnvironment": false,
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-python.black-formatter"
@@ -36,6 +37,8 @@
     "tailwind-fold.foldedTextColor": "#6699cc",
     "tailwind-fold.unfoldIfLineSelected": true,
     "tailwind-fold.showTailwindImage": true,
+    "djlint.formatJs": true,
+    "djlint.formatCss": true,
     "djlint.maxAttributeLength": 10,
     "djlint.maxLineLength": 20,
     "editor.suggest.showWords": false,
@@ -48,5 +51,6 @@
         "**/db.sqlite3": true,
         "**/__pycache__": true,
         "**/__init__.py": true,
-    }
+    },
+    "makefile.configureOnOpen": false
 }
