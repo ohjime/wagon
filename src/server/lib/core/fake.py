@@ -3,7 +3,7 @@ import factory
 from datetime import timedelta
 from django.utils import timezone
 
-from factory.declarations import LazyFunction, SubFactory
+from factory.declarations import LazyFunction, SubFactory, LazyAttribute
 from factory import post_generation  # type: ignore
 from factory.faker import Faker
 from core import models
@@ -20,19 +20,53 @@ except Exception:  # pragma: no cover
     googlemaps = None
 
 
+def _unique_email() -> str:
+    """Return an email not present in the DB, trying a few random candidates."""
+    # Try a bunch of random numeric suffixes to avoid collisions with prior runs.
+    for _ in range(1000):
+        n = random.randint(0, 10**12)
+        email = f"user{n}@example.com"
+        if not models.Account.objects.filter(email=email).exists():
+            return email
+    # Absolute fallback using UUID to guarantee uniqueness
+    return f"user-{uuid4()}@example.com"
+
+
+def _unique_uid() -> str:
+    """Return a UUID that's not already used in the DB (extremely unlikely collision)."""
+    for _ in range(10):
+        uid = str(uuid4())
+        if not models.Account.objects.filter(uid=uid).exists():
+            return uid
+    return str(uuid4())
+
+
+def _unique_phone() -> str:
+    """Return a phone number not present in the DB (E.164 +1XXXXXXXXXX)."""
+    for _ in range(1000):
+        n = random.randint(0, 10**10 - 1)
+        phone = "+1" + f"{n:010d}"
+        if not models.Account.objects.filter(phone=phone).exists():
+            return phone
+    # Fallback with UUID-derived tail to guarantee uniqueness
+    tail = str(uuid4().int % (10**10)).rjust(10, "0")
+    return "+1" + tail
+
+
 class AccountFactory(factory.django.DjangoModelFactory):
     """Base account used by Driver/Rider factories."""
 
     class Meta:  # type: ignore
         model = models.Account
 
-    uid = Faker("uuid4")
+    # Ensure UID doesn't collide with existing rows (super rare, but safe)
+    uid = LazyFunction(_unique_uid)
     first_name = Faker("first_name")
     last_name = Faker("last_name")
-    # Ensure unique and deterministic emails
-    email = factory.Sequence(lambda n: f"user{n}@example.com")
-    # Short E.164-style and unique to avoid length/unique issues
-    phone = factory.Sequence(lambda n: "+1" + f"{n%10**10:010d}")
+    # Ensure DB-unique emails across multiple runs
+    email = LazyFunction(_unique_email)
+    # Short E.164-style and DB-unique across runs
+    phone = LazyFunction(_unique_phone)
 
     @factory.lazy_attribute  # type: ignore
     def avatar(self):
@@ -138,11 +172,12 @@ def _random_place_google():
     poi_types = ["restaurant", "cafe", "store", "park", "bar", "museum"]
     poi_type = random.choice(poi_types)
     try:
-        resp = client.places_nearby(
+        resp = client.places_nearby(  # type: ignore[attr-defined]
             location=(lat, lng),
             radius=10000,  # 10km
             open_now=False,
             type=poi_type,
+            timeout=5,
         )
         results = resp.get("results", [])
         if not results:
@@ -155,7 +190,7 @@ def _random_place_google():
         # Try to get a formatted address via Place Details; fallback to vicinity/name
         formatted_address = None
         if place_id:
-            details = client.place(place_id=place_id, fields=["formatted_address"])
+            details = client.place(place_id=place_id, fields=["formatted_address"])  # type: ignore[attr-defined]
             formatted_address = details.get("result", {}).get("formatted_address")
 
         address = (
@@ -203,11 +238,11 @@ class PlaceFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("id",)  # dedupe by primary key
 
     class Params:
-        payload = factory.LazyFunction(_make_place_payload)
+        payload = LazyFunction(_make_place_payload)
 
-    id = factory.LazyAttribute(lambda o: o.payload["id"])
-    address = factory.LazyAttribute(lambda o: o.payload["address"])
-    coordinate = factory.LazyAttribute(lambda o: o.payload["point"])
+    id = LazyAttribute(lambda o: o.payload["id"])
+    address = LazyAttribute(lambda o: o.payload["address"])
+    coordinate = LazyAttribute(lambda o: o.payload["point"])
 
 
 class TripFactory(factory.django.DjangoModelFactory):
@@ -230,7 +265,7 @@ class TripFactory(factory.django.DjangoModelFactory):
         # Ensure destination differs from origin; retry a few times
         for _ in range(5):
             place = PlaceFactory()
-            if place.id != self.origin_id:
+            if place.id != self.origin_id:  # type: ignore[attr-defined]
                 return place
         return PlaceFactory()
 

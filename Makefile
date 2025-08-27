@@ -66,7 +66,7 @@ superuser:
 		&& uv sync
 	@cd src/server \
 		&& uv run lib/main.py createsuperuser
-
+# TODO: Make names dev-specific so on server clean production isn't affected
 dev-db:
 	@echo "Setting up PostgreSQL database...\n"
 	@cd src/server \
@@ -80,3 +80,8 @@ macos-env:
 		&& brew install gdal \
 		&& brew install proj \
 		&& brew install geos
+
+mock-data:
+	@echo "Setting up mock data...\n"
+	@cd src/server \
+		&& WAGON_SKIP_GOOGLE=1 printf "from core.fake import generate\ngenerate(40)\n" | uv run lib/main.py shell
