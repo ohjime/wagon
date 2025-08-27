@@ -81,7 +81,7 @@ macos-env:
 		&& brew install proj \
 		&& brew install geos
 
-mock-data:
+fake-data:
 	@echo "Setting up mock data...\n"
 	@cd src/server \
 		&& WAGON_SKIP_GOOGLE=1 printf "from core.fake import generate\ngenerate(40)\n" | uv run lib/main.py shell

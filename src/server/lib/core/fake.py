@@ -153,19 +153,23 @@ def _random_point_near(lat: float, lng: float, max_km: float = 20.0) -> Point:
 
 def _gmaps_client():
     key = os.getenv("GOOGLE_MAPS_API_KEY")
-    if key and googlemaps:
-        try:
-            return googlemaps.Client(key=key)
-        except Exception:
-            return None
-    return None
+    if not googlemaps:
+        raise RuntimeError(
+            "googlemaps package not available. Install it to use Google Places."
+        )
+    if not key:
+        raise RuntimeError(
+            "GOOGLE_MAPS_API_KEY is not set. Configure it to enable Google Places."
+        )
+    try:
+        return googlemaps.Client(key=key)
+    except Exception as e:
+        raise RuntimeError("Failed to initialize Google Maps client") from e
 
 
 def _random_place_google():
-    """Try to fetch a nearby random place from Google Places."""
+    """Fetch a nearby random place from Google Places (required)."""
     client = _gmaps_client()
-    if not client:
-        return None
 
     lat, lng = EDMONTON_CENTER
     # Query a random nearby POI type
@@ -177,11 +181,10 @@ def _random_place_google():
             radius=10000,  # 10km
             open_now=False,
             type=poi_type,
-            timeout=5,
         )
         results = resp.get("results", [])
         if not results:
-            return None
+            raise RuntimeError("Google Places returned no results")
         picked = random.choice(results)
         place_id = picked.get("place_id")
         geom = picked.get("geometry", {}).get("location", {})
@@ -210,8 +213,8 @@ def _random_place_google():
             "address": address,
             "point": point,
         }
-    except Exception:
-        return None
+    except Exception as e:
+        raise RuntimeError("Failed to fetch place from Google Places") from e
 
 
 def _random_place_local():
@@ -226,10 +229,8 @@ def _random_place_local():
 
 def _make_place_payload():
     """Produce a single coherent payload used by PlaceFactory fields."""
-    data = _random_place_google()
-    if not data:
-        data = _random_place_local()
-    return data
+    # Require Google; do not fall back to local fake addresses
+    return _random_place_google()
 
 
 class PlaceFactory(factory.django.DjangoModelFactory):
