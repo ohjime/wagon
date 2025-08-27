@@ -1,6 +1,23 @@
 {% extends "django_tables2/table.html" %}
 {% load django_tables2 i18n %}
 {% block table.thead %}
+    <!-- Search Bar -->
+    <div>
+        <input class="input input-bordered join-item"
+               type="text"
+               name="search"
+               value="{{ request.GET.search }}"
+               placeholder="Search..."
+               hx-get="{% url 'table_htmx' %}"
+               hx-trigger="keyup delay:500ms, changed, search"
+               hx-target="div.table-container"
+               hx-swap="outerHTML"
+               hx-indicator=".htmx-indicator">
+        <!-- Spinner -->
+        <i class="mx-2 htmx-indicator fa fa-spinner fa-pulse"></i>
+        <span class="loading loading-spinner text-success htmx-indicator"
+              id="spinner"></span>
+    </div>
     {% if table.show_header %}
         <thead>
             <tr>
