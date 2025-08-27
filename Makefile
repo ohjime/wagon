@@ -68,5 +68,5 @@ superuser:
 dev-db:
 	@echo "Setting up PostgreSQL database...\n"
 	@cd src/server \
-		&& psql -h localhost -p 5432 -U domain -d postgres -c "CREATE USER admin WITH PASSWORD 'changeme';" \
-		&& psql -h localhost -p 5432 -U domain -d postgres -c "CREATE DATABASE wagon_db OWNER admin;"
+		&& psql -h localhost -p 5432 -U $(USER) -d postgres -c "CREATE USER admin WITH PASSWORD 'changeme';" \
+		&& psql -h localhost -p 5432 -U $(USER) -d postgres -c "CREATE DATABASE wagon_db OWNER admin;"
