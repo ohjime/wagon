@@ -113,7 +113,7 @@
             {% htmx_script %}
       </head>
       <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
-            class="flex h-screen w-screen flex-col overscroll-y-none"
+            class="flex h-screen w-screen flex-col overscroll-y-none font-sans"
             x-data="{ toggleDrawer: false, hoverDrawer: false }">
             <div id="page-loader">
                   <div class="loader"
@@ -227,6 +227,7 @@
                   </div>
             </header>
             <div class="flex h-[calc(100vh-5rem)] flex-1 flex-row">
+                  <c-right-drawer />
                   <nav class="fixed top-20 bottom-0 left-0 z-10 flex flex-col items-start px-2.5 text-base-content transition-all duration-300"
                        :class="hoverDrawer || toggleDrawer ? 'w-80 bg-base-300' : 'w-20 bg-base-300'"
                        @mouseenter="hoverDrawer = true"

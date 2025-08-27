@@ -1,12 +1,12 @@
 RED="'\033[0;31m'"
 NC="'\033[0m'"
 
-docs-start:
+wiki:
 	@echo "Starting Documentation Server...\n"
 	@cd docs \
 		&& npm start
 
-docs-build:
+wiki-build:
 	@echo "Building Documentation Server...\n"
 	@cd docs \
 		&& npm install @docusaurus/eslint-plugin@latest --save-dev \
@@ -53,6 +53,9 @@ server-clean:
 	@echo "Deleting default SQLite databases"
 	@cd src/server \
 		&& find . -type f -name "db.sqlite3" -exec rm -f {} +
+	@echo "Wiping PostgreSQL database wagon_db..."
+	@cd src/server \
+		&& psql -h localhost -p 5432 -U domain -d postgres -c "DROP DATABASE IF EXISTS wagon_db;"
 
 superuser:
 	@echo "Creating superuser for Central Backend...\n"
@@ -61,3 +64,8 @@ superuser:
 		&& uv sync
 	@cd src/server \
 		&& uv run lib/main.py createsuperuser
+
+db:
+	@echo "Setting up PostgreSQL database...\n"
+	@cd src/server \
+		&& psql -h localhost -p 5432 -U domain -d postgres -c "CREATE DATABASE wagon_db OWNER admin;"

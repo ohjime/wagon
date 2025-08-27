@@ -12,7 +12,11 @@ dependencies = [
     "django-tables2>=2.7.5",
     "django-vite>=3.1.0",
     "django-cotton>=0.2.0",
-    "factory-boy>=3.3.3",
+    "sqids>=0.5.2",
+    "python-dotenv>=1.1.1",
+    "django-widget-tweaks>=1.5.0",
+    "psycopg[binary]>=3.2",
+    "googlemaps>=4.10.0",
 ]
 
 [dependency-groups]
@@ -25,3 +29,4 @@ dev = [
 
 [tool.djlint]
 ignore = ["D018"]
+custom_html = "c-[\\w-]+"

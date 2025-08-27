@@ -46,28 +46,32 @@
                             </div>
                             <div class="flex flex-col gap-1.5">
                                 <div class="truncate font-medium w-32">
-                                    {{ trip.rider.account.name }}
+                                    {{ trip.rider }}
                                 </div>
-                                <div class="btn truncate w-32">
+                                <button class="btn btn-soft truncate w-fit font-mono uppercase font-normal px-2"
+                                        hx-get="{{ trip.get_absolute_url }}"
+                                        hx-target="#right-drawer-body"
+                                        hx-swap="innerHTML"
+                                        @click.stop="$dispatch('right-drawer:open', { title: 'Trip T-{{ trip.hashid }}', width: 'w-4xl max-w-full' })">
                                     <div class="truncate">
-                                        {{ trip.id }}
+                                        T-{{ trip.hashid }}
                                     </div>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </th>
                     <td>
                         <div class="flex flex-col w-30">
                             <div>
-                                {% if trip.datetime %}
-                                    {{ trip.datetime|date:"g:i A" }}
+                                {% if trip.date %}
+                                    {{ trip.date|date:"g:i A" }}
                                 {% else %}
                                     --
                                 {% endif %}
                             </div>
                             <div>
-                                {% if trip.datetime %}
-                                    {{ trip.datetime|date:"F j, Y" }}
+                                {% if trip.date %}
+                                    {{ trip.date|date:"F j, Y" }}
                                 {% else %}
                                     No date
                                 {% endif %}
@@ -96,7 +100,7 @@
                             </div>
                             <div class="flex flex-col gap-1.5">
                                 <div class="truncate font-medium w-32">
-                                    {{ trip.driver.account.name }}
+                                    {{ trip.driver }}
                                 </div>
                                 {% with s=trip.status %}
                                     <div class="py-1 px-2 rounded-3xl w-fit capitalize {% if s == 'canceled' %} bg-red-300{% elif s == 'completed' %} bg-green-300 {% elif s == 'scheduled' %} bg-purple-200 {% elif s == 'in_progress' %} bg-yellow-100 {% else %} bg-base-300 {% endif %}">

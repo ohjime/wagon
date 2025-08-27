@@ -1,0 +1,61 @@
+---
+sidebar_label: Database Schema
+---
+
+# Design Document
+
+## Database Schema
+
+### Account Model
+#### Managing Unique Identifiers between Firebase Auth and Django
+For the **Account** model, our goal is to integrate Firebase Authentication with Django’s ORM while balancing database performance and data consistency. The primary goal is to link a Django user to a Firebase user. Firebase provides each user with a unique identifier (`uid`), which we will store in a dedicated field (`firebase_uid`). While it may seem natural to directly use the Firebase UID as the primary key, this approach can introduce performance challenges in relational databases such as PostgreSQL.
+
+Research and community discussions highlight that non-sequential, high-entropy keys (e.g., Firebase UIDs or UUIDs) can lead to performance degradation in B-Tree indexes, increased storage overhead, and inefficient caching [[PlanetScale Blog](https://planetscale.com/blog/the-problem-with-using-a-uuid-primary-key-in-mysql)]. Instead, the recommended approach is to retain the database-native `AUTO INCREMENT` primary key (`id`) for efficient indexing and joins, while storing Firebase’s UID in a unique, indexed column.
+
+In addition, since emails are user-facing and essential for account management, the **email field** will also be required, unique, and indexed. This ensures both Firebase UID and email are unique identifiers within our system, without sacrificing query performance.
+
+**Schema fields:**
+- `id` (Primary Key, Auto Increment)
+- `firebase_uid` (CharField, unique, indexed)
+- `email` (EmailField, unique, indexed)
+- other profile-related fields…
+
+This hybrid design ensures Django maintains fast primary key lookups while still enforcing Firebase UID and email uniqueness.
+
+**References:**
+- [PlanetScale Blog: The problem with using a UUID primary key in MySQL](https://planetscale.com/blog/the-problem-with-using-a-uuid-primary-key-in-mysql)
+- [Django documentation: Model field reference](https://docs.djangoproject.com/en/stable/ref/models/fields/)
+- [Reddit Django Community Discussion on ID Strategies](https://www.reddit.com/r/django/comments/1bujgnq/what_is_your_model_id_strategy_and_why/)
+- [Django documentation: Customizing authentication](https://docs.djangoproject.com/en/stable/topics/auth/customizing/)
+- Additional reading: Creating a Custom User Model in Django (TestDriven.io)
+
+---
+
+### Trip Model
+#### Simplified Identifiers for Public Use
+For the **Trip** model, a distinction is needed between internal database efficiency and public-facing identifiers. The database will use a traditional auto-incrementing `id` for internal relations, joins, and indexing. However, because trips may need to be shared, referenced, or displayed to users, we require a shorter, human-friendly identifier. Exposing the auto-incrementing primary key in URLs can be a security risk and is not aesthetically pleasing; a separate public code avoids leaking internal identifiers.
+
+To achieve this, we introduce a `trip_code` field: an 8-character alphanumeric string (uppercase letters + digits). This ensures a large enough key space to accommodate business growth while maintaining simplicity for user-facing contexts (e.g., sharing, memorization). With 36 possible characters per position, the space of 36^8 (~2.8 trillion combinations) provides ample capacity.
+
+**Schema fields:**
+- `id` (Primary Key, Auto Increment)
+- `trip_code` (CharField, length=8, unique, indexed)
+- other trip-related fields…
+
+This design allows:
+- Efficient database performance through sequential primary keys.
+- Human-readable and shareable trip identifiers.
+- Strong uniqueness guarantees for public-facing trip codes.
+
+**Generation strategy:**
+- Generate `trip_code` using a short, random, uppercase alphanumeric string (e.g., Django’s `get_random_string`), or a library like `shortuuid`.
+- Enforce uniqueness with a database `unique` constraint and a pre-save uniqueness check/retry loop to handle rare collisions.
+- Use `trip_code` in public URLs and sharing flows; keep the integer `id` for internal relations and joins.
+
+**References:**
+- [Django documentation: Unique fields](https://docs.djangoproject.com/en/stable/ref/models/fields/#unique)
+- [Community discussions on identifier design in Django](https://www.reddit.com/r/django/comments/1bujgnq/what_is_your_model_id_strategy_and_why/)
+- [Django documentation: Models](https://docs.djangoproject.com/en/stable/topics/db/models/)
+- Django utility: `get_random_string` (see [django.utils.crypto.get_random_string](https://docs.djangoproject.com/en/stable/ref/utils/#django.utils.crypto.get_random_string))
+- Library option: [shortuuid](https://github.com/skorokithakis/shortuuid)
+- Additional reading: Stack Overflow discussion on short, human-readable IDs; DEV.to article on public-facing IDs in Django

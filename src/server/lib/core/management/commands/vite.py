@@ -84,7 +84,7 @@ Examples:
         procfile = options["procfile"]
         if not os.path.exists(procfile):
             self._create_procfile(procfile, options)
-        self._announce(procfile, "Starting Django + Vite (Honcho)")
+        self._announce(procfile, "Starting Django with Vite Development Server")
         self._run(
             ["honcho", "-f", procfile, "start"],
             "Failed to start Honcho",

@@ -1,15 +1,14 @@
-from pathlib import Path
 import os
+import platform
+from pathlib import Path
+from dotenv import load_dotenv
 
 os.environ["DJANGO_RUNSERVER_HIDE_WARNING"] = "true"
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-# Generate new key for Production
 SECRET_KEY = "django-insecure-u8#1l$95&vq3w2(ei^=ng+4tdid@by!s+&u&jlizx&xr&w&(gk"
-# False in Production
 DEBUG = True
-ALLOWED_HOSTS = []
+load_dotenv(BASE_DIR / ".env")
+ALLOWED_HOSTS = str(os.getenv("ALLOWED_HOSTS", default=["*"])).split(",")
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -18,16 +17,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django_browser_reload",
     "django.contrib.staticfiles",
+    "django.contrib.gis",
     "django_vite",
     "django_htmx",
     "django_tables2",
     "django_cotton",
+    "widget_tweaks",
     "core",
     "dashboard",
 ]
-# if DEBUG:
-#     INSTALLED_APPS += ["django_browser_reload"]
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -38,14 +36,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
 ]
-# if DEBUG:
-#     MIDDLEWARE += [
-#         # NOTE: The middleware should be listed after any that encode
-#         # the response, such as Django’s GZipMiddleware. The middleware
-#         # automatically inserts the required script tag on HTML responses
-#         # before </body> when DEBUG is True.
-#         "django_browser_reload.middleware.BrowserReloadMiddleware",
-#     ]
 ROOT_URLCONF = "app.urls"
 TEMPLATES = [
     {
@@ -67,6 +57,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "app.context.maps_api_key",
             ],
             "builtins": [
                 "django_cotton.templatetags.cotton",
@@ -77,10 +68,17 @@ TEMPLATES = [
 WSGI_APPLICATION = "app.wsgi.application"
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": os.getenv("DB_NAME", "djmap_demo"),
+        "USER": os.getenv("DB_USER", ""),
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
+if platform.system() == "Darwin":
+    GDAL_LIBRARY_PATH = "/opt/homebrew/opt/gdal/lib/libgdal.dylib"
+    GEOS_LIBRARY_PATH = "/opt/homebrew/opt/geos/lib/libgeos_c.dylib"
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -95,9 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
 AUTH_USER_MODEL = "core.User"
-
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True

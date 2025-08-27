@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Driver, Rider, Trip, User
+from .models import Account, Driver, Rider, Trip, User, Place
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
@@ -12,3 +12,4 @@ admin.site.register(Account)
 admin.site.register(Driver)
 admin.site.register(Rider)
 admin.site.register(Trip)
+admin.site.register(Place)

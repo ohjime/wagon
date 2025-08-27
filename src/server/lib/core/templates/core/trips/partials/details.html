@@ -1,6 +1,73 @@
-<h1>
-    Trip Details
-</h1>
+<div>
+    <c-route-card api-key="{{ GOOGLE_MAPS_API_KEY|default_if_none:'' }}"
+                  initial-origin="{{ object.origin.address|default_if_none:'' }}"
+                  initial-destination="{{ object.destination.address|default_if_none:'' }}"
+                  initial-origin-id="{{ object.origin.id|default_if_none:'' }}"
+                  initial-destination-id="{{ object.destination.id|default_if_none:'' }}">
+    </c-route-card>
+</div>
+<div class="pt-10">
+    <c-vehicle-card make-img="https://www.carlogos.org/car-logos/toyota-logo-1989-download.png"
+                    vehicle-img="https://adanac.net/wp-content/uploads/2018/03/Ram-Promaster-300x209.png"
+                    id="WAGON-15"
+                    wheelchair-capacity="3"
+                    seated-capacity="5"
+                    year="2025"
+                    model="ProMaster"
+                    make="Dodge"
+                    plate="ABC123">
+    </c-vehicle-card>
+</div>
+<div class="max-w-5xl mx-auto p-6">
+    <ul class="grid gap-4 grid-cols-1 md:grid-cols-[1fr_2fr]">
+        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-xs border p-4">
+            <legend class="fieldset-legend">
+                Page details
+            </legend>
+            <label class="label">
+                Title
+            </label>
+            <input type="text"
+                   class="input"
+                   placeholder="My awesome page" />
+            <label class="label">
+                Slug
+            </label>
+            <input type="text"
+                   class="input"
+                   placeholder="my-awesome-page" />
+            <label class="label">
+                Author
+            </label>
+            <input type="text"
+                   class="input"
+                   placeholder="Name" />
+        </fieldset>
+        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-full border p-4">
+            <legend class="fieldset-legend">
+                Page details
+            </legend>
+            <label class="label">
+                Title
+            </label>
+            <input type="text"
+                   class="input w-full"
+                   placeholder="My awesome page" />
+            <label class="label">
+                Slug
+            </label>
+            <input type="text"
+                   class="input w-full"
+                   placeholder="my-awesome-page" />
+            <label class="label">
+                Author
+            </label>
+            <input type="text"
+                   class="input w-full"
+                   placeholder="Name" />
+        </fieldset>
+    </ul>
+</div>
 <p>
     ID: {{ object.id }}
 </p>
@@ -11,7 +78,7 @@
     Rider: {{ object.rider }}
 </p>
 <p>
-    Date/Time: {{ object.datetime }}
+    Date/Time: {{ object.date }}
 </p>
 <p>
     Origin: {{ object.origin }}
