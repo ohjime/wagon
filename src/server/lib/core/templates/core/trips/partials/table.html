@@ -37,8 +37,9 @@
                 <td>
                     Drop-off Location
                 </td>
-                <td>Driver</td>
-                <td>Status</td>
+                <td>
+                    Driver and Trip Status
+                </td>
             </tr>
         </thead>
     {% endif %}
@@ -61,7 +62,7 @@
                                 </div>
                             </div>
                             <div class="flex flex-col gap-1.5">
-                                <div class="truncate font-normal w-32 text-xs">
+                                <div class="truncate font-medium w-32">
                                     {{ trip.rider.account.name }}
                                 </div>
                                 <div class="btn truncate w-32">
@@ -101,7 +102,7 @@
                         </div>
                     </td>
                     <td>
-                        <div class="w-40 flex items-center gap-3">
+                        <div class="w-50 flex items-center gap-3">
                             <div class="avatar skeleton">
                                 <div class="mask mask-squircle h-12 w-12">
                                     <img src="{{ trip.driver.account.avatar }}"
@@ -110,19 +111,17 @@
                                          height="48" />
                                 </div>
                             </div>
-                            <div>
-                                <div class="truncate w-32">
+                            <div class="flex flex-col gap-1.5">
+                                <div class="truncate font-medium w-32">
                                     {{ trip.driver.account.name }}
                                 </div>
+                                {% with s=trip.status %}
+                                    <div class="py-1 px-2 rounded-3xl w-fit capitalize {% if s == 'canceled' %} bg-red-300{% elif s == 'completed' %} bg-green-300 {% elif s == 'scheduled' %} bg-purple-200 {% elif s == 'in_progress' %} bg-yellow-100 {% else %} bg-base-300 {% endif %}">
+                                        {{ trip.get_status_display }}
+                                    </div>
+                                {% endwith %}
                             </div>
                         </div>
-                    </td>
-                    <td>
-                        {% with s=trip.status %}
-                            <div class="py-2 px-4 rounded-3xl capitalize{% if s == 'canceled' %} bg-red-300{% elif s == 'completed' %} bg-green-300{% elif s == 'scheduled' %} bg-purple-200 {% elif s == 'in_progress' %} bg-yellow-100{% else %} bg-base-300{% endif %}">
-                                {{ trip.get_status_display }}
-                            </div>
-                        {% endwith %}
                     </td>
                 </tr>
             {% endwith %}
