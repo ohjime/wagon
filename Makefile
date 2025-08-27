@@ -53,9 +53,11 @@ server-clean:
 	@echo "Deleting default SQLite databases"
 	@cd src/server \
 		&& find . -type f -name "db.sqlite3" -exec rm -f {} +
-	@echo "Wiping PostgreSQL database wagon_db..."
+	@echo "Wiping PostgreSQL database wagon_db and dropping all tables..."
 	@cd src/server \
-		&& psql -h localhost -p 5432 -U domain -d postgres -c "DROP DATABASE IF EXISTS wagon_db;"
+		&& psql -h localhost -p 5432 -U $(USER) -d postgres -c "DROP DATABASE IF EXISTS wagon_db;" \
+		&& psql -h localhost -p 5432 -U $(USER) -d postgres -c 'DROP OWNED BY admin CASCADE;' || true \
+		&& psql -h localhost -p 5432 -U $(USER) -d postgres -c 'DROP USER IF EXISTS admin;' || true
 
 superuser:
 	@echo "Creating superuser for Central Backend...\n"
@@ -69,4 +71,12 @@ dev-db:
 	@echo "Setting up PostgreSQL database...\n"
 	@cd src/server \
 		&& psql -h localhost -p 5432 -U $(USER) -d postgres -c "CREATE USER admin WITH PASSWORD 'changeme';" \
+		&& psql -h localhost -p 5432 -U postgres -d postgres -c "ALTER USER admin WITH SUPERUSER;" \
 		&& psql -h localhost -p 5432 -U $(USER) -d postgres -c "CREATE DATABASE wagon_db OWNER admin;"
+
+macos-env:
+	@echo "Setting up macOS development environment...\n"
+	@cd src/server \
+		&& brew install gdal \
+		&& brew install proj \
+		&& brew install geos
