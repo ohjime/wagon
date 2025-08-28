@@ -1,11 +1,16 @@
 from django_tables2 import RequestConfig
-from .models import Trip, Place
+from .models import Trip, Place, Driver
 from .tables import TripTable
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
-from django.http import HttpRequest
-from django.http import HttpResponseRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponseRedirect,
+    HttpResponseBadRequest,
+    HttpResponse,
+)
 from django.db.models import Q
+from django.template.loader import render_to_string  # <-- add
 
 
 def trips_index(request):
@@ -16,6 +21,122 @@ def trips_index(request):
     else:
         template_name = "core/trips/trips.html"
     return render(request, template_name, {"table": table})
+
+
+# 👇 REPLACE the previous version of this function with this one
+def trip_driver_field_search(request):
+    """
+    Handles HTMX search requests for drivers and returns an HTML fragment.
+    - With driver_id: returns the full driver summary block HTML (card + vehicle info).
+    - With query: returns a list of dropdown items.
+    """
+    if not request.htmx:
+        return HttpResponseBadRequest("This endpoint is for HTMX requests only.")
+
+    driver_id = request.GET.get("driver_id")
+    if driver_id:
+        try:
+            d = Driver.objects.select_related("account").get(pk=int(driver_id))
+        except (Driver.DoesNotExist, ValueError):
+            return HttpResponseBadRequest("Invalid driver_id")
+
+        # Defaults mirroring the initial render in details.html
+        default_vehicle_img = "https://d1mkhyrwwj7jji.cloudfront.net/wp-content/uploads/2020/06/17113405/sienna-png.png"
+        default_vehicle_make_img = (
+            "https://www.carlogos.org/car-logos/toyota-logo-1989-download.png"
+        )
+        default_avatar = (
+            f"https://i.pravatar.cc/150?u={getattr(d.account, 'id', 'driver')}"
+        )
+
+        html = render_to_string(
+            "cotton/driver_summary_card.html",
+            {
+                "driver_avatar": getattr(d.account, "avatar", default_avatar)
+                or default_avatar,
+                "driver_name": (
+                    f"{getattr(d.account, 'first_name', '')} {getattr(d.account, 'last_name', '')}".strip()
+                )
+                or getattr(d.account, "email", "")
+                or "Driver",
+                "driver_identifier": getattr(
+                    d, "identifier", f"D-{getattr(d.account, 'id', '')}"
+                ),
+                "driver_phone": getattr(d.account, "phone", "") or "",
+                "vehicle_img": getattr(
+                    getattr(d, "vehicle", None), "img", default_vehicle_img
+                )
+                or default_vehicle_img,
+                "vehicle_make_img": getattr(
+                    getattr(d, "vehicle", None), "make_img", default_vehicle_make_img
+                )
+                or default_vehicle_make_img,
+                "vehicle_year": getattr(getattr(d, "vehicle", None), "year", 2025)
+                or 2025,
+                "vehicle_make": getattr(getattr(d, "vehicle", None), "make", "Toyota")
+                or "Toyota",
+                "vehicle_model": getattr(getattr(d, "vehicle", None), "model", "Sienna")
+                or "Sienna",
+                "vehicle_id": getattr(getattr(d, "vehicle", None), "id", "WAGON-15")
+                or "WAGON-15",
+                "vehicle_plate": getattr(getattr(d, "vehicle", None), "plate", "ABC123")
+                or "ABC123",
+                "vehicle_wheelchair_capacity": getattr(
+                    getattr(d, "vehicle", None), "wheelchair_capacity", 1
+                )
+                or 1,
+                "vehicle_seated_capacity": getattr(
+                    getattr(d, "vehicle", None), "seated_capacity", 4
+                )
+                or 4,
+            },
+            request=request,
+        )
+        return HttpResponse(html)
+
+    # Return the dropdown items for a search query
+    query = request.GET.get("query", "").strip()
+    if query:
+        drivers = (
+            Driver.objects.filter(
+                Q(account__first_name__icontains=query)
+                | Q(account__last_name__icontains=query)
+                | Q(account__email__icontains=query)
+            )
+            .select_related("account")
+            .only("id", "account__first_name", "account__last_name", "account__email")[
+                :5
+            ]
+        )
+    else:
+        drivers = Driver.objects.none()
+
+    if drivers.count() == 0:
+        html = """
+            <div class="p-4 text-center text-gray-500">No drivers found.</div>
+            """
+    else:
+        html = "".join(
+            render_to_string(
+                "cotton/driver_dropdown_item.html",
+                {
+                    "driver_id": d.pk,
+                    "driver_avatar": (
+                        getattr(d.account, "avatar", default_avatar)
+                        if False
+                        else d.account.avatar
+                    ),
+                    "driver_name": f"{d.account.first_name} {d.account.last_name}".strip()
+                    or d.account.email,
+                    "vehicle_wheelchair_capacity": 1,
+                    "vehicle_seating_capacity": 5,
+                    "driver_status": "available",
+                },
+                request=request,
+            )
+            for d in drivers
+        )
+    return HttpResponse(html)
 
 
 # Search/filtering of trips table
@@ -122,4 +243,4 @@ class TripDetailView(DetailView):
         if getattr(request, "htmx", False):
             context = self.get_context_data(object=self.object)
             return render(request, "core/trips/partials/details.html", context)
-        return HttpResponseRedirect(self.object.get_absolute_url())
+        return HttpResponseRedirect(self.object.get_absolute_url())  # type: ignore

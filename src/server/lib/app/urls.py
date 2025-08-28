@@ -5,7 +5,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
-    path("", include("core.urls")),
+    path("dispatch/", include("core.urls")),
 ]
 
 if settings.DEBUG:
