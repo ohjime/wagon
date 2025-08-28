@@ -51,7 +51,7 @@ class Rider(models.Model):
 class TripStatus(models.TextChoices):
     scheduled = "scheduled", _("Scheduled")
     assigned = "assigned", _("Assigned")
-    enroute = "enroute", _("En Route")
+    en_route = "en_route", _("En Route")
     arrived = "arrived", _("Arrived")
     in_progress = "in_progress", _("In Progress")
     completed = "completed", _("Completed")
