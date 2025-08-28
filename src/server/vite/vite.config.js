@@ -11,7 +11,9 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 test: resolve("./assets/js/main.js"),
-            }
+            },
+            onwarn: (warning, warn) => (warning.code !== 'EVAL') ? warn(warning) : undefined // suppress eval warnings (@vue/devtools)
+
         }
     },
     plugins: [

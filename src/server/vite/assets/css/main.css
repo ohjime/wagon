@@ -1,8 +1,17 @@
+@import url('https://fonts.cdnfonts.com/css/helvetica-neue-5');
 @import "tailwindcss";
 
 @source "../../../lib";
 @source "..";
 
 @plugin "daisyui" {
-    themes: pastel --default, sunset --prefersdark;
+    themes: winter --default, dim --prefersdark;
+}
+
+@utility no-scrollbar {
+    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+
+@theme {
+    --font-sans: 'Helvetica Neue', Arial, sans-serif;
 }
