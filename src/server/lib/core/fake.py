@@ -123,6 +123,36 @@ def _random_time_window():
     return now + delta
 
 
+# ---------------------------------------------------------------------------
+# Notes generation (customer/driver/dispatcher)
+# ---------------------------------------------------------------------------
+def _random_note(p_empty: float = 0.35) -> str:
+    """Return a short realistic note, sometimes empty.
+
+    p_empty controls probability of returning an empty string to reflect
+    that many trips won't have notes filled in.
+    """
+    if random.random() < p_empty:
+        return ""
+
+    snippets = [
+        "Please call on arrival.",
+        "Use side entrance.",
+        "Gate code 1234#.",
+        "Customer has a service animal.",
+        "Beware of dog at the yard.",
+        "Ring the doorbell twice.",
+        "Meet at the loading zone.",
+        "Building C, unit 204.",
+        "Leave package with concierge.",
+        "Cash tip expected.",
+        "Road construction nearby—allow extra time.",
+        "Call dispatcher if delayed.",
+    ]
+    # Compose 1–3 short snippets to form a note.
+    return " ".join(random.sample(snippets, k=random.randint(1, 3)))
+
+
 # Edmonton center for local random coordinates
 EDMONTON_CENTER = (53.5461, -113.4938)  # (lat, lng)
 
@@ -229,7 +259,15 @@ def _random_place_local():
 
 def _make_place_payload():
     """Produce a single coherent payload used by PlaceFactory fields."""
-    # Require Google; do not fall back to local fake addresses
+    # Allow local-only generation when requested (e.g., in CI or offline dev)
+    skip_google = os.getenv("WAGON_SKIP_GOOGLE", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    if skip_google:
+        return _random_place_local()
     return _random_place_google()
 
 
@@ -260,6 +298,11 @@ class TripFactory(factory.django.DjangoModelFactory):
         return random.choice(list(TripStatus))
 
     status = LazyFunction(_random_status)
+
+    # Optional notes fields with realistic content (sometimes empty)
+    customer_notes = LazyFunction(_random_note)
+    driver_notes = LazyFunction(lambda: _random_note(0.5))
+    dispatcher_notes = LazyFunction(lambda: _random_note(0.6))
 
     @factory.lazy_attribute  # type: ignore
     def destination(self):  # type: ignore
@@ -293,6 +336,16 @@ class TripFactory(factory.django.DjangoModelFactory):
             if origin.id == dest.id:
                 dest = PlaceFactory()
 
+            customer_notes = overrides.get("customer_notes")
+            driver_notes = overrides.get("driver_notes")
+            dispatcher_notes = overrides.get("dispatcher_notes")
+            if customer_notes is None:
+                customer_notes = _random_note()
+            if driver_notes is None:
+                driver_notes = _random_note(0.5)
+            if dispatcher_notes is None:
+                dispatcher_notes = _random_note(0.6)
+
             trip = models.Trip.objects.create(
                 driver=driver,
                 rider=rider,
@@ -300,6 +353,9 @@ class TripFactory(factory.django.DjangoModelFactory):
                 origin=origin,
                 destination=dest,
                 status=random.choice(list(TripStatus)),
+                customer_notes=customer_notes,
+                driver_notes=driver_notes,
+                dispatcher_notes=dispatcher_notes,
             )
             created.append(trip)
         return created

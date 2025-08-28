@@ -87,6 +87,10 @@ class Trip(models.Model):
         default=TripStatus.scheduled,
     )
 
+    customer_notes = models.TextField(blank=True, default="")
+    driver_notes = models.TextField(blank=True, default="")
+    dispatcher_notes = models.TextField(blank=True, default="")
+
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         super().save(*args, **kwargs)
