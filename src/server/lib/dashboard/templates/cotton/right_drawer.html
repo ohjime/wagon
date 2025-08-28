@@ -43,24 +43,26 @@ Reusable right-side drawer using DaisyUI + Alpine.js + HTMX
         <!-- Bottom -->
         <div class="bg-base-200 border-base-300 border-t p-4 shadow-lg flex justify-between items-center">
             <!-- Status Select Dropdown -->
-            <select class="select !w-40">
-                <option>
-                    {{ 'Scheduled' }}
+            <select class="select !w-40"
+                    x-model="status"
+                    aria-label="Trip Status">
+                <option value="scheduled">
+                    Scheduled
                 </option>
-                <option>
-                    {{ 'En Route' }}
+                <option value="en_route">
+                    En Route
                 </option>
-                <option>
-                    {{ 'Arrived' }}
+                <option value="arrived">
+                    Arrived
                 </option>
-                <option>
-                    {{ 'In Progress' }}
+                <option value="in_progress">
+                    In Progress
                 </option>
-                <option>
-                    {{ 'Completed' }}
+                <option value="completed">
+                    Completed
                 </option>
-                <option>
-                    {{ 'Canceled' }}
+                <option value="canceled">
+                    Canceled
                 </option>
             </select>
             <!-- Update Button + Actions -->
@@ -96,9 +98,11 @@ Reusable right-side drawer using DaisyUI + Alpine.js + HTMX
                 openState: false,
                 title: null,
                 widthClass: 'w-fit max-w-full',
+                status: null,
                 open(opts = {}) {
                     this.title = opts.title || this.title
                     this.widthClass = opts.width || this.widthClass
+                    this.status = (opts.status !== undefined && opts.status !== null) ? opts.status : this.status
                     this.openState = true
                 },
                 close() {

@@ -52,7 +52,7 @@
                                         hx-get="{{ trip.get_absolute_url }}"
                                         hx-target="#right-drawer-body"
                                         hx-swap="innerHTML"
-                                        @click.stop="$dispatch('right-drawer:open', { title: 'Trip T-{{ trip.hashid }}', width: 'w-4xl max-w-full' })">
+                                        @click.stop="$dispatch('right-drawer:open', { title: 'Trip T-{{ trip.hashid }}', width: 'w-4xl max-w-full', status: '{{ trip.status }}' })">
                                     <div class="truncate">
                                         T-{{ trip.hashid }}
                                     </div>
