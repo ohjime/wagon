@@ -40,6 +40,55 @@ Reusable right-side drawer using DaisyUI + Alpine.js + HTMX
              class="flex-1 overflow-auto p-4">
             <!-- HTMX will load content here -->
         </div>
+        <!-- Bottom -->
+        <div class="bg-base-200 border-base-300 border-t p-4 shadow-lg flex justify-between items-center">
+            <!-- Status Select Dropdown -->
+            <select class="select !w-40">
+                <option>
+                    {{ 'Scheduled' }}
+                </option>
+                <option>
+                    {{ 'En Route' }}
+                </option>
+                <option>
+                    {{ 'Arrived' }}
+                </option>
+                <option>
+                    {{ 'In Progress' }}
+                </option>
+                <option>
+                    {{ 'Completed' }}
+                </option>
+                <option>
+                    {{ 'Canceled' }}
+                </option>
+            </select>
+            <!-- Update Button + Actions -->
+            <div class="flex items-center gap-2">
+                <button class="btn btn-md !bg-green-400">
+                    Update
+                </button>
+                <div class="dropdown dropdown-top dropdown-end">
+                    <div tabindex="0"
+                         role="button"
+                         class="btn btn-md bg-base-100">
+                        Actions
+                    </div>
+                    <ul tabindex="0"
+                        class="dropdown-content menu bg-base-100 rounded-box z-1 min-w-max p-2 mb-3 whitespace-nowrap shadow-md">
+                        <li>
+                            <a>Get Quote</a>
+                        </li>
+                        <li>
+                            <a>Book Return Trip</a>
+                        </li>
+                        <li class="text-red-600">
+                            <a>Delete Ride</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </aside>
     <script>
         function rightDrawer() {

@@ -21,21 +21,43 @@ def trips_index(request):
 # Search/filtering of trips table
 def table_htmx(request):
     import time
+    from datetime import datetime
 
     time.sleep(1)
     query = request.GET.get("search", "").strip()
+    date_filter = request.GET.get("date", "").strip()
+    status_filter = request.GET.get("status", "").strip()
+
     qs = Trip.objects.all()
+
+    # Text search filter - restrict to rider/driver names, addresses, and hashid
     if query:
         qs = qs.filter(
-            Q(id__icontains=query)
-            | Q(rider__account__name__icontains=query)
-            | Q(driver__account__name__icontains=query)
-            | Q(origin__icontains=query)
-            | Q(destination__icontains=query)
+            Q(rider__account__first_name__icontains=query)
+            | Q(rider__account__last_name__icontains=query)
+            | Q(driver__account__first_name__icontains=query)
+            | Q(driver__account__last_name__icontains=query)
+            | Q(origin__address__icontains=query)
+            | Q(destination__address__icontains=query)
+            | Q(hashid__icontains=query)
         )
+
+    # Date filter - filter trips on the selected date
+    if date_filter:
+        try:
+            filter_date = datetime.strptime(date_filter, "%Y-%m-%d").date()
+            qs = qs.filter(date__date=filter_date)
+        except ValueError:
+            # Handle invalid date format
+            pass
+
+    # Status filter
+    if status_filter:
+        qs = qs.filter(status=status_filter)
+
     table = TripTable(qs)
     RequestConfig(request, paginate={"per_page": 80}).configure(table)  # type: ignore
-    return render(request, "core/trips/partials/list.html", {"table": table})
+    return render(request, "core/trips/partials/table.html", {"table": table})
 
 
 def riders_index(request):

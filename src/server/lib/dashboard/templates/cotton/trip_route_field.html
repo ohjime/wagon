@@ -20,19 +20,13 @@ Usage:
             display: none !important;
         }
     </style>
-    <div class="card bg-base-100 border border-base-300 shadow-sm">
-        <div class="card-body gap-3">
-            <!-- Map -->
-            <div class="mt-2">
-                <div id="address-map"
-                     class="w-full aspect-video rounded-box border border-base-300">
-                </div>
-            </div>
-            <h3 class="card-title text-lg">
-                Plan route
-            </h3>
+    <fieldset class="fieldset w-full rounded-box border border-base-300 bg-base-100 !p-4">
+        <legend class="fieldset-legend text-lg">
+            Trip Route
+        </legend>
+        <div class="w-full flex flex-row">
             <!-- Inputs -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 <!-- Origin -->
                 <div class="relative">
                     <label class="label">
@@ -114,20 +108,14 @@ Usage:
                     </ul>
                 </div>
             </div>
-            <!-- Actions -->
-            <div class="flex items-center gap-2">
-                <button class="btn btn-primary"
-                        :disabled="!originPlaceId || !destinationPlaceId"
-                        @click="calculateAndDisplayRoute()">
-                    Show route
-                </button>
-                <button class="btn btn-ghost"
-                        @click="resetForm()">
-                    Clear
-                </button>
+        </div>
+        <!-- Map -->
+        <div class="mt-2">
+            <div id="address-map"
+                 class="w-full aspect-video rounded-box border border-base-300">
             </div>
         </div>
-    </div>
+    </fieldset>
     <script>
         function addressRoute() {
             return {

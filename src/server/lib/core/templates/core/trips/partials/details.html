@@ -1,91 +1,34 @@
-<div>
-    <c-route-card api-key="{{ GOOGLE_MAPS_API_KEY|default_if_none:'' }}"
-                  initial-origin="{{ object.origin.address|default_if_none:'' }}"
-                  initial-destination="{{ object.destination.address|default_if_none:'' }}"
-                  initial-origin-id="{{ object.origin.id|default_if_none:'' }}"
-                  initial-destination-id="{{ object.destination.id|default_if_none:'' }}">
-    </c-route-card>
+<div class="flex flex-col gap-3">
+    <c-trip-rider-field rider-avatar="{{ object.rider.account.avatar }}"
+                        rider-name="{{ object.rider.account.first_name }} {{ object.rider.account.last_name }}"
+                        rider-email="{{ object.rider.account.email }}"
+                        rider-phone="{{ object.rider.account.phone }}"
+                        wheelchair-count="{{ object.wheelchair_count|default:1 }}"
+                        seated-count="{{ object.seated_count|default:0 }}"
+                        trip-date-time="{{ object.date }}">
+    </c-trip-rider-field>
+    <c-trip-route-field api-key="{{ GOOGLE_MAPS_API_KEY|default_if_none:'' }}"
+                        initial-origin="{{ object.origin.address|default_if_none:'' }}"
+                        initial-destination="{{ object.destination.address|default_if_none:'' }}"
+                        initial-origin-id="{{ object.origin.id|default_if_none:'' }}"
+                        initial-destination-id="{{ object.destination.id|default_if_none:'' }}">
+    </c-trip-route-field>
+    <c-trip-driver-field driver-avatar="{{ object.driver.account.avatar }}"
+                         driver-name="{{ object.driver.account.first_name }} {{ object.driver.account.last_name }}"
+                         driver-identifier="D-{{ object.driver.account.id }}"
+                         driver-phone="{{ object.driver.account.phone }}"
+                         vehicle-img="{{ object.driver.vehicle.img|default:'https://d1mkhyrwwj7jji.cloudfront.net/wp-content/uploads/2020/06/17113405/sienna-png.png' }}"
+                         vehicle-make-img="{{ object.driver.vehicle.make_img|default:'https://www.carlogos.org/car-logos/toyota-logo-1989-download.png' }}"
+                         vehicle-id="{{ object.driver.vehicle.id|default:'WAGON-15' }}"
+                         vehicle-wheelchair-capacity="{{ object.driver.vehicle.wheelchair_capacity|default:1 }}"
+                         vehicle-seated-capacity="{{ object.driver.vehicle.seated_capacity|default:4 }}"
+                         vehicle-year="{{ object.driver.vehicle.year|default:2025 }}"
+                         vehicle-model="{{ object.driver.vehicle.model|default:'Sienna' }}"
+                         vehicle-make="{{ object.driver.vehicle.make|default:'Toyota' }}"
+                         vehicle-plate="{{ object.driver.vehicle.plate|default:'ABC123' }}">
+    </c-trip-driver-field>
+    <c-trip-notes-field customer-notes="{{ object.customer_notes|default:'' }}"
+                        driver-notes="{{ object.driver_notes|default:'' }}"
+                        dispatcher-notes="{{ object.dispatcher_notes|default:'' }}">
+    </c-trip-notes-field>
 </div>
-<div class="pt-10">
-    <c-vehicle-card make-img="https://www.carlogos.org/car-logos/toyota-logo-1989-download.png"
-                    vehicle-img="https://adanac.net/wp-content/uploads/2018/03/Ram-Promaster-300x209.png"
-                    id="WAGON-15"
-                    wheelchair-capacity="3"
-                    seated-capacity="5"
-                    year="2025"
-                    model="ProMaster"
-                    make="Dodge"
-                    plate="ABC123">
-    </c-vehicle-card>
-</div>
-<div class="max-w-5xl mx-auto p-6">
-    <ul class="grid gap-4 grid-cols-1 md:grid-cols-[1fr_2fr]">
-        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-xs border p-4">
-            <legend class="fieldset-legend">
-                Page details
-            </legend>
-            <label class="label">
-                Title
-            </label>
-            <input type="text"
-                   class="input"
-                   placeholder="My awesome page" />
-            <label class="label">
-                Slug
-            </label>
-            <input type="text"
-                   class="input"
-                   placeholder="my-awesome-page" />
-            <label class="label">
-                Author
-            </label>
-            <input type="text"
-                   class="input"
-                   placeholder="Name" />
-        </fieldset>
-        <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-full border p-4">
-            <legend class="fieldset-legend">
-                Page details
-            </legend>
-            <label class="label">
-                Title
-            </label>
-            <input type="text"
-                   class="input w-full"
-                   placeholder="My awesome page" />
-            <label class="label">
-                Slug
-            </label>
-            <input type="text"
-                   class="input w-full"
-                   placeholder="my-awesome-page" />
-            <label class="label">
-                Author
-            </label>
-            <input type="text"
-                   class="input w-full"
-                   placeholder="Name" />
-        </fieldset>
-    </ul>
-</div>
-<p>
-    ID: {{ object.id }}
-</p>
-<p>
-    Driver: {{ object.driver }}
-</p>
-<p>
-    Rider: {{ object.rider }}
-</p>
-<p>
-    Date/Time: {{ object.date }}
-</p>
-<p>
-    Origin: {{ object.origin }}
-</p>
-<p>
-    Destination: {{ object.destination }}
-</p>
-<p>
-    Status: {{ object.status }}
-</p>

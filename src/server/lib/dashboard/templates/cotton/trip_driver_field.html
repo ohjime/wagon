@@ -1,18 +1,43 @@
-{% comment %}
-Vehicle Display widget (Cotton component)
-Usage:
-<c-vehicle-display src="https://example.com/vehicle.jpg" id="WAGON-15" wheelchair-capacity="1" seated-capacity="4" year="2016" model="Sienna" make="Toyota" license-plate="ABC123" />
-
-Notes:
-- Hyphenated attributes become underscore variables in template:
-  wheelchair-capacity => wheelchair_capacity, seated-capacity => seated_capacity, license-plate => license_plate
-- Keep it simple (no JS). Tailwind/DaisyUI classes for styling.
-{% endcomment %}
-<fieldset class="fieldset w-full rounded-box border border-base-300 bg-base-100 px-4 !pt-1 !pb-4 md:mt-36">
+<fieldset class="fieldset w-full rounded-box border border-base-300 bg-base-100 px-4 !pt-2 !pb-5">
     <legend class="fieldset-legend text-xl font-extrabold">
-        Vehicle Summary
+        Driver Summary
     </legend>
-    <div class="relative flex w-full min-w-1/2 flex-col gap-2">
+    <div class="form-control w-full mb-4">
+        <input type="text"
+               placeholder="Search Drivers..."
+               class="input input-bordered w-full" />
+    </div>
+    <!-- Rider Card -->
+    <div class="flex h-full w-full flex-col justify-around gap-2 rounded-3xl bg-secondary text-secondary-content p-4">
+        <!-- First Row -->
+        <div class="flex w-1/3 flex-row justify-between">
+            <!-- Rider Avatar -->
+            <div class="avatar">
+                <div class="h-18 w-18 rounded-full">
+                    <img src="{{ driver_avatar }}"
+                         alt="Driver avatar"
+                         width="72"
+                         height="72" />
+                </div>
+            </div>
+        </div>
+        <!-- Second Row -->
+        <div class="w-1/3 text-xl font-semibold">
+            <!-- Driver Name -->
+            {{ driver_name }}
+        </div>
+        <!-- Third Row -->
+        <div class="-mt-3 w-1/3">
+            <!-- Driver Identifier -->
+            {{ driver_identifier }}
+        </div>
+        <!-- Fourth Row -->
+        <div class="w-1/3 btn btn-primary font-semibold btn-xs">
+            <!-- Driver Phone -->
+            {{ driver_phone }}
+        </div>
+    </div>
+    <div class="pt-4 pl-3 relative flex w-full min-w-1/2 flex-col gap-2">
         <div class="right-0 flex flex-col items-center justify-center md:absolute md:bottom-14">
             <div class="w-fit">
                 <img src="{{ vehicle_img }}"
@@ -20,7 +45,7 @@ Notes:
                      height="auto"
                      alt="Make logo"
                      class="h-56 w-md object-contain" />
-                <img src="{{ make_img }}"
+                <img src="{{ vehicle_make_img }}"
                      width="auto"
                      height="auto"
                      alt="Make logo"
@@ -28,15 +53,15 @@ Notes:
             </div>
         </div>
         <div class="text-lg font-light uppercase font-stretch-110%">
-            {{ year }} {{ make }} {{ model }}
+            {{ vehicle_year }} {{ vehicle_make }} {{ vehicle_model }}
         </div>
         <div class="font-mono font-bold">
-            {{ id }} {{ plate }}
+            {{ vehicle_id }} {{ vehicle_plate }}
         </div>
         <div class="flex flex-row gap-4">
             <div class="flex flex-row gap-1">
                 <div class="text-lg">
-                    {{ wheelchair_capacity }}
+                    {{ vehicle_wheelchair_capacity }}
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg"
                      height="24px"
@@ -48,7 +73,7 @@ Notes:
             </div>
             <div class="flex flex-row gap-1">
                 <div class="text-lg">
-                    {{ seated_capacity }}
+                    {{ vehicle_seated_capacity }}
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg"
                      height="24px"
@@ -59,8 +84,8 @@ Notes:
                 </svg>
             </div>
         </div>
-        <div class="btn btn-soft">
-            See Vehicle Details
+        <div class="mt-2 btn btn-soft">
+            See Driver Details
         </div>
     </div>
 </fieldset>

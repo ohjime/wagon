@@ -21,12 +21,12 @@ ifdef run
 		&& $(run)
 else
 	@reset
-	@echo "${RED}Killing any Orphan${NC} Processes..."
+	@echo "${RED}Killing Orphaned Django Processes...${NC}"
 	@./bin/kill_honcho.sh
 	@echo "\nInstalling dependencies...\n"
 	@cd src/server \
 		&& uv sync
-	@echo "\nBuild Static Files...\n"
+	@echo "\nBuilding Vite Assets..."
 	@cd src/server/vite \
 		&& npm install \
 		&& npm run build
