@@ -34,8 +34,8 @@ Examples:
         super().add_arguments(parser)
         parser.add_argument(
             "--procfile",
-            default="Procfile.vite",
-            help="Path to Procfile for Honcho (default: Procfile.vite)",
+            default="procfile.dev",
+            help="Path to Procfile for Honcho (default: procfile.dev)",
         )
         parser.add_argument(
             "--package-manager",
